@@ -1,0 +1,425 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restablecer Contraseña</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+            .particle:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .particle:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                left: 20%;
+                animation-delay: 2s;
+            }
+
+            .particle:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                left: 30%;
+                animation-delay: 4s;
+            }
+
+            .particle:nth-child(4) {
+                width: 100px;
+                height: 100px;
+                left: 40%;
+                animation-delay: 6s;
+            }
+
+            .particle:nth-child(5) {
+                width: 90px;
+                height: 90px;
+                left: 50%;
+                animation-delay: 8s;
+            }
+
+            .particle:nth-child(6) {
+                width: 110px;
+                height: 110px;
+                left: 60%;
+                animation-delay: 10s;
+            }
+
+            .particle:nth-child(7) {
+                width: 70px;
+                height: 70px;
+                left: 70%;
+                animation-delay: 12s;
+            }
+
+            .particle:nth-child(8) {
+                width: 130px;
+                height: 130px;
+                left: 80%;
+                animation-delay: 14s;
+            }
+
+        @@keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideIn 0.6s ease-out;
+        }
+
+            .login-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 35px 60px rgba(0, 0, 0, 0.3);
+            }
+
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .login-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+                animation: rotate 20s linear infinite;
+            }
+
+        @@keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .login-title {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-body {
+            padding: 40px 30px;
+        }
+
+        .form-info-text {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            outline: none;
+        }
+
+            .form-input:focus {
+                border-color: #667eea;
+                background: white;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                transform: translateY(-2px);
+            }
+
+        .form-label {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: white;
+            padding: 0 5px;
+        }
+
+        .form-input:focus + .form-label,
+        .form-input:not(:placeholder-shown) + .form-label {
+            top: 0;
+            left: 15px;
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+            .login-button::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                transition: left 0.5s ease;
+            }
+
+            .login-button:hover::before {
+                left: 100%;
+            }
+
+            .login-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            }
+
+            .login-button:active {
+                transform: translateY(0);
+            }
+
+        .login-links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .login-link {
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+            .login-link::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -2px;
+                left: 0;
+                background: #667eea;
+                transition: width 0.3s ease;
+            }
+
+            .login-link:hover::after {
+                width: 100%;
+            }
+
+            .login-link:hover {
+                color: #764ba2;
+            }
+
+        .error-alert {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @@keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .login-container {
+                padding: 10px;
+            }
+
+            .login-title {
+                font-size: 2rem;
+            }
+
+            .login-body {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles">
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1 class="login-title">Recuperar Contraseña</h1>
+                <p class="login-subtitle">No te preocupes, te ayudaremos.</p>
+            </div>
+
+            <div class="login-body">
+                <form action="@Url.Action("Restablecer_Contra", "Access")" method="post">
+
+                    @{
+                        if (ViewBag.Error != null)
+                        {
+                            <div class="error-alert" role="alert">
+                                @ViewBag.Error
+                            </div>
+                        }
+                    }
+
+                    <p class="form-info-text">
+                        Ingresa tu correo electrónico y te enviaremos una nueva contraseña.
+                    </p>
+
+                    <div class="form-group">
+                        <input type="email"
+                               name="Correo"
+                               class="form-input"
+                               placeholder=" "
+                               autocomplete="off"
+                               required>
+                        <label class="form-label">Correo electrónico</label>
+                    </div>
+
+                    <button type="submit" class="login-button">
+                        Restablecer Contraseña
+                    </button>
+
+                    <div class="login-links">
+                        <a href="@Url.Action("Index", "Access")" class="login-link">Volver al Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

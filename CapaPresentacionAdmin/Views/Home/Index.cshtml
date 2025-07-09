@@ -1,0 +1,155 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+}
+
+<h1 class="mt-4">Dashboard</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Dashboard</li>
+</ol>
+
+<div class="row">
+    <div class="col-xl-4 col-md-6">
+        <div class="dashboard-widget">
+            <div class="info">
+                <h6>Cantidad de Clientes</h6>
+                <h4 id="totalcliente">0</h4>
+            </div>
+            <div class="icon bg-primary">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6">
+        <div class="dashboard-widget">
+            <div class="info">
+                <h6>Total Ventas</h6>
+                <h4 id="totalventa">0</h4>
+            </div>
+            <div class="icon bg-success">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6">
+        <div class="dashboard-widget">
+            <div class="info">
+                <h6>Cantidad de Productos</h6>
+                <h4 id="totalproducto">0</h4>
+            </div>
+            <div class="icon bg-warning">
+                <i class="fas fa-boxes"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-tags me-1"></i>
+        Historial de Ventas
+    </div>
+    <div class="card-body">
+        <form action="@Url.Action("Exportar_Venta", "Home")" method="post">
+            <div class="row align-items-end">
+                <div class="col-sm-2">
+                    <label class="form-label">Fecha de Inicio:</label>
+                    <input type="text" class="form-control" id="txtfechainicio" name="fechainicio" />
+                </div>
+                <div class="col-sm-2">
+                    <label class="form-label">Fecha Fin:</label>
+                    <input type="text" class="form-control" id="txtfechafin" name="fechafin" />
+                </div>
+                <div class="col-sm-2">
+                    <label class="form-label">ID Transacción:</label>
+                    <input type="text" class="form-control" id="txtidtransaccion" name="idtransaccion" />
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-primary w-100" id="btnbuscar" type="button">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-success w-100" type="submit">
+                        <i class="fas fa-file-excel"></i> Exportar
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <hr />
+        <div class="table-responsive">
+            <table id="tabla" class="table table-hover table-bordered" style="width:100%">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha Venta</th>
+                        <th>Cliente</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th>ID Transacción</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+    var tabladata;
+
+    $(document).ready(function () {
+        $("#txtfechainicio").datepicker({ dateFormat: 'dd/mm/yy' }).datepicker('setDate', new Date());
+        $("#txtfechafin").datepicker({ dateFormat: 'dd/mm/yy' }).datepicker('setDate', new Date());
+
+        $.ajax({
+            url: '@Url.Action("VistaDashBoard", "Home")',
+            type: 'GET',
+            success: function (data) {
+                var res = data.resultado;
+                $("#totalcliente").text(res.TotalCliente);
+                $("#totalventa").text(res.TotalVenta);
+                $("#totalproducto").text(res.TotalProducto);
+            }
+        });
+
+        cargarTabla();
+    });
+
+    function cargarTabla() {
+        var url = '@Url.Action("ListaReporte", "Home")' +
+            "?fechainicio=" + $("#txtfechainicio").val() +
+            "&fechafin=" + $("#txtfechafin").val() +
+            "&idtransaccion=" + $("#txtidtransaccion").val();
+
+        tabladata = $('#tabla').DataTable({
+            destroy: true,
+            responsive: true,
+            ordering: false,
+            ajax: {
+                url: url,
+                type: 'GET',
+                datatype: 'json'
+            },
+            columns: [
+                { data: "FechaVenta" },
+                { data: "Cliente" },
+                { data: "Producto" },
+                { data: "Precio" },
+                { data: "Cantidad" },
+                { data: "Total" },
+                { data: "IdTransaccion" }
+            ],
+            language: {
+                url: '//cdn.datatables.net/plug-ins/2.2.2/i18n/es-ES.json'
+            }
+        });
+    }
+
+    $("#btnbuscar").on("click", function () {
+        cargarTabla();
+    });
+    </script>
+}

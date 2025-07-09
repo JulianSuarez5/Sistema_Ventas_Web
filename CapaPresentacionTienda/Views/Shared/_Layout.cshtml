@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    <style>
+        /* Estilos para la navbar fija */
+        .navbar-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(110, 69, 226, 0.15);
+            transition: all 0.3s ease-in-out;
+        }
+
+            /* Versión compacta cuando se hace scroll */
+            .navbar-fixed.scrolled {
+                padding: 0.25rem 0;
+                background: linear-gradient(135deg, rgba(110, 69, 226, 0.95) 0%, rgba(136, 211, 206, 0.95) 100%) !important;
+                backdrop-filter: blur(15px);
+                box-shadow: 0 4px 25px rgba(110, 69, 226, 0.2);
+            }
+
+        /* Ajuste para que el contenido no se oculte bajo la navbar */
+        body {
+            padding-top: 76px; /* Altura aproximada de la navbar */
+        }
+
+        /* Estilos para los elementos de la navbar */
+        .navbar-fixed .navbar-brand,
+        .navbar-fixed .nav-link,
+        .navbar-fixed .btn-outline-dark {
+            color: white !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-fixed .nav-link:hover,
+            .navbar-fixed .nav-link.active {
+                color: #ffd700 !important;
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            }
+
+        .navbar-fixed .btn-outline-dark {
+            border-color: white;
+            background-color: transparent;
+        }
+
+            .navbar-fixed .btn-outline-dark:hover {
+                background-color: white;
+                color: #6e45e2 !important;
+                border-color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+            }
+
+        /* Estilos para el carrito */
+        .navbar-fixed .badge {
+            background-color: #ffd700 !important;
+            color: #6e45e2 !important;
+            font-weight: 600;
+        }
+
+        /* Dropdown mejorado */
+        .navbar-fixed .dropdown-menu {
+            border: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-radius: 0.75rem;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            margin-top: 0.5rem;
+        }
+
+        .navbar-fixed .dropdown-item {
+            padding: 0.7rem 1.5rem;
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+        }
+
+            .navbar-fixed .dropdown-item:hover {
+                background-color: #6e45e2;
+                color: white;
+                transform: translateX(5px);
+            }
+
+        /* Animación para el toggle button */
+        .navbar-fixed .navbar-toggler {
+            border: 2px solid white;
+            background-color: transparent;
+            transition: all 0.3s ease;
+        }
+
+            .navbar-fixed .navbar-toggler:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                transform: scale(1.05);
+            }
+
+        .navbar-fixed .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+        /* Efecto de aparición suave */
+        .navbar-fixed {
+            opacity: 0;
+            animation: fadeInDown 0.5s ease-out forwards;
+        }
+
+        @@keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 991.98px) {
+            .navbar-fixed .navbar-collapse {
+                background-color: rgba(110, 69, 226, 0.95);
+                backdrop-filter: blur(15px);
+                border-radius: 0.75rem;
+                margin-top: 1rem;
+                padding: 1rem;
+            }
+        }
+
+        /* Footer ajustado */
+        footer {
+            background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-fixed" id="mainNavbar">
+        <div class="container-fluid px-4">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="@Url.Action("Index","Store")">
+                            <i class="fas fa-home me-2"></i>Inicio
+                        </a>
+                    </li>
+                </ul>
+                <form class="d-flex">
+                    @if (Session["Cliente"] == null)
+                    {
+                        <a class="btn btn-outline-dark" aria-current="page" href="@Url.Action("Index","Access")">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-dark me-3" href="@Url.Action("Cart","Store")">
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            Carrito
+                            <span class="badge bg-warning text-dark ms-1 rounded-pill" id="cantidadencarrito">0</span>
+                        </a>
+                        <ul class="navbar-nav ms-auto me-0 me-md-3 my-2 my-md-0">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle fa-fw me-1"></i>@User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("MyPurchases","Store")">
+                                            <i class="fas fa-shopping-bag me-2"></i>Mis compras
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("Salir","Access")">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    }
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    @RenderBody()
+
+    <footer>
+        <div class="container">
+            <p class="mb-0">&copy; @DateTime.Now.Year - AutomateHub | Tu tienda de confianza</p>
+        </div>
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+    <script>
+        $(document).ready(function () {
+            MostrarProductosEnCarrito();
+
+            // Efecto de navbar al hacer scroll
+            $(window).scroll(function () {
+                var navbar = $('#mainNavbar');
+                if ($(window).scrollTop() > 50) {
+                    navbar.addClass('scrolled');
+                } else {
+                    navbar.removeClass('scrolled');
+                }
+            });
+        });
+
+        function MostrarProductosEnCarrito() {
+            if ($("#cantidadencarrito").length > 0) {
+                jQuery.ajax({
+                    url: "@Url.Action("ListCart", "Store")",
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        $("#cantidadencarrito").text(data.Cantidad);
+
+                        // Animación del badge cuando se actualiza
+                        $("#cantidadencarrito").addClass('animate__animated animate__pulse');
+                        setTimeout(function() {
+                            $("#cantidadencarrito").removeClass('animate__animated animate__pulse');
+                        }, 1000);
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

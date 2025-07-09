@@ -1,0 +1,216 @@
+﻿@model List<CapaEntidad.clsDetalle_Venta>
+@using System.Globalization;
+
+@{
+    ViewBag.Title = "Mis Compras";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .purchases-header {
+        background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+        color: white;
+        text-align: center;
+    }
+
+    .purchases-title {
+        font-weight: 700;
+        font-size: 2.5rem;
+    }
+
+    /* Tarjeta para cada compra */
+    .purchase-card {
+        background: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        overflow: hidden; /* Para que los bordes redondeados funcionen bien */
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .purchase-card-header {
+        background-color: #f8f9fa;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .purchase-id {
+        font-family: monospace;
+        background-color: #e9ecef;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    /* Tabla de productos dentro de la tarjeta */
+    .purchase-table {
+        margin-bottom: 0; /* La tabla no necesita margen inferior */
+    }
+
+        .purchase-table th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6 !important;
+            font-weight: 600;
+            color: #343a40;
+        }
+
+        .purchase-table td {
+            vertical-align: middle;
+            border-top: 1px solid #dee2e6 !important;
+        }
+
+    .product-image-sm {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+    }
+
+    .purchase-total-row {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    /* Estado Vacío */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+        background-color: #ffffff;
+        border-radius: 1rem;
+        color: #6c757d;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: #dee2e6;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-text {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .start-shopping-btn {
+        background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        color: white;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(110, 69, 226, 0.3);
+    }
+
+        .start-shopping-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(110, 69, 226, 0.4);
+            color: white;
+        }
+
+    /* Animación de entrada */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<header class="purchases-header">
+    <div class="container">
+        <h1 class="purchases-title"><i class="fas fa-receipt me-2"></i>Mis Compras</h1>
+    </div>
+</header>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            @{
+                if (Model != null && Model.Count > 0)
+                {
+                    // Agrupar compras por transacción
+                    var comprasAgrupadas = Model.GroupBy(d => d.IdTransaccion);
+
+                    foreach (var grupo in comprasAgrupadas)
+                    {
+                        <div class="purchase-card">
+                            <div class="purchase-card-header">
+                                <span>
+                                    <i class="fas fa-barcode me-2"></i>
+                                    ID Transacción: <span class="purchase-id">@grupo.Key</span>
+                                </span>
+                                @*<span>
+                                        <i class="fas fa-calendar-alt me-2"></i>
+                                        @grupo.First().objVenta.FechaVenta.ToString("dd/MM/yyyy")
+                                    </span>*@
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table purchase-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 15%;">Imagen</th>
+                                            <th style="width: 40%;">Producto</th>
+                                            <th class="text-center" style="width: 15%;">Precio</th>
+                                            <th class="text-center" style="width: 15%;">Cantidad</th>
+                                            <th class="text-end" style="width: 15%;">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            decimal montoTotalTransaccion = 0;
+                                            foreach (var item in grupo)
+                                            {
+                                                montoTotalTransaccion += item.Total;
+                                                <tr>
+                                                    <td>
+                                                        <img class="product-image-sm" src="data:image/@item.objProducto.Extension;base64,@item.objProducto.Base64" alt="@item.objProducto.Nombre" />
+                                                    </td>
+                                                    <td>@item.objProducto.Nombre</td>
+                                                    <td class="text-center">
+                                                        @item.objProducto.Precio.ToString("C", new CultureInfo("eS-US")) USD
+                                                    </td>
+                                                    <td class="text-center">@item.Cantidad</td>
+                                                    <td class="text-end">
+                                                        @item.Total.ToString("C", new CultureInfo("en-US")) USD
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        <tr class="purchase-total-row">
+                                            <td colspan="4" class="text-end"><strong>Total de la Compra:</strong></td>
+                                            <td class="text-end"><strong>@montoTotalTransaccion.ToString("C", new CultureInfo("en-US")) USD</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-box-open"></i></div>
+                        <h4 class="empty-state-text">Aún no has realizado ninguna compra</h4>
+                        <a href="@Url.Action("Index", "Store")" class="start-shopping-btn">
+                            <i class="fas fa-shopping-bag me-2"></i>Ir a la tienda
+                        </a>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,806 @@
+﻿@{
+    ViewBag.Title = "Carrito de Compras";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* ----- ESTILOS GENERALES Y HEADER ----- */
+    .cart-header {
+        background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+    }
+
+    .cart-title {
+        font-weight: 700;
+        font-size: 2.5rem;
+        color: white;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .cart-subtitle {
+        font-weight: 300;
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.9);
+        text-align: center;
+    }
+
+    /* ----- CONTENEDOR PRINCIPAL ----- */
+    .cart-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    /* ----- SECCIÓN DE PRODUCTOS ----- */
+    .cart-products-section {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .cart-section-title {
+        font-weight: 600;
+        font-size: 1.4rem;
+        color: #343a40;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .continue-shopping-btn {
+        background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        color: white;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(110, 69, 226, 0.3);
+    }
+
+        .continue-shopping-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(110, 69, 226, 0.4);
+            color: white;
+        }
+
+    /* ----- TARJETAS DE PRODUCTO ----- */
+    .cart-product-card {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+        .cart-product-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+    .product-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-brand {
+        font-weight: 600;
+        color: #6e45e2;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .product-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        word-break: break-word;
+        margin-left: 0.5rem;
+    }
+
+    .product-name {
+        font-weight: 500;
+        color: #343a40;
+        margin-top: 0.25rem;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    .product-price {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #28a745;
+    }
+
+    /* ----- CONTROLES DE CANTIDAD ----- */
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: white;
+        width: max-content;
+        max-width: 100%;
+        margin: auto;
+    }
+
+    .quantity-btn {
+        border: none;
+        background: #6e45e2;
+        color: white;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .quantity-btn:hover {
+            background: #5a3bc0;
+        }
+
+    .quantity-input {
+        border: none;
+        background: white;
+        text-align: center;
+        width: 40px;
+        height: 35px;
+        font-weight: 500;
+        color: #343a40;
+    }
+
+        .quantity-input:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+    /* ----- BOTÓN ELIMINAR ----- */
+    .delete-btn {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: white;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+    /* ----- TOTAL ----- */
+    .cart-total {
+        background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        text-align: right;
+        margin-top: 1rem;
+    }
+
+    .cart-total-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    /* ----- SECCIÓN DE ENVÍO ----- */
+    .shipping-section {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+        position: sticky;
+        top: 100px;
+    }
+
+    .shipping-title {
+        font-weight: 600;
+        font-size: 1.3rem;
+        color: #343a40;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control,
+    .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #6e45e2;
+            box-shadow: 0 0 0 0.2rem rgba(110, 69, 226, 0.25);
+        }
+
+    /* ----- BOTÓN DE PAGO ----- */
+    .checkout-btn {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        border-radius: 0.75rem;
+        padding: 1rem 2rem;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+
+    /* ----- ESTADO VACÍO ----- */
+    .empty-cart {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+    .empty-cart-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #dee2e6;
+    }
+
+    .empty-cart-text {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* ----- RESPONSIVE ----- */
+    @@media (max-width: 768px) {
+        .cart-header {
+            padding: 2rem 0;
+        }
+
+        .cart-title {
+            font-size: 2rem;
+        }
+
+        .cart-products-section,
+        .shipping-section {
+            padding: 1.5rem;
+        }
+
+        .cart-product-card {
+            padding: 1rem;
+        }
+
+            .cart-product-card .row {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .cart-product-card .col-md-2,
+            .cart-product-card .col-md-3,
+            .cart-product-card .col-md-6,
+            .cart-product-card .col-md-4,
+            .cart-product-card .col-md-12 {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 1rem;
+            }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+        }
+
+        .quantity-controls {
+            justify-content: center;
+        }
+
+        .delete-btn {
+            width: 100%;
+        }
+    }
+
+    /* ----- ANIMACIONES ----- */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ----- LOADING OVERLAY PERSONALIZADO ----- */
+    .LoadingOverlay {
+        background: rgba(110, 69, 226, 0.1) !important;
+        backdrop-filter: blur(5px);
+    }
+</style>
+
+
+<!-- Header del Carrito -->
+<header class="cart-header">
+    <div class="container">
+        <h1 class="cart-title">🛒 Tu Carrito de Compras</h1>
+        <p class="cart-subtitle">Revisa tus productos y completa tu compra</p>
+    </div>
+</header>
+
+<div class="cart-container">
+    <div class="row">
+        <!-- Sección de Productos -->
+        <div class="col-lg-8">
+            <div class="cart-products-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="cart-section-title mb-0">
+                        <i class="fas fa-shopping-bag me-2"></i>Productos en tu carrito
+                    </h2>
+                    <a class="continue-shopping-btn" href="@Url.Action("Index", "Store")">
+                        <i class="fas fa-arrow-left me-2"></i>Seguir comprando
+                    </a>
+                </div>
+
+                <div id="productos-carrito">
+                    <!-- Los productos se cargarán aquí dinámicamente -->
+                </div>
+
+                <!-- Estado vacío -->
+                <div id="empty-cart-state" class="empty-cart" style="display: none;">
+                    <div class="empty-cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <p class="empty-cart-text">Tu carrito está vacío</p>
+                    <a href="@Url.Action("Index", "Store")" class="continue-shopping-btn">
+                        <i class="fas fa-shopping-bag me-2"></i>Comenzar a comprar
+                    </a>
+                </div>
+
+                <!-- Total -->
+                <div class="cart-total">
+                    <p class="cart-total-text">
+                        Total: $<span id="total">0.00</span> USD
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Envío -->
+        <div class="col-lg-4">
+            <div class="shipping-section">
+                <h3 class="shipping-title">
+                    <i class="fas fa-truck me-2"></i>Información de Envío
+                </h3>
+
+                <form>
+                    <div class="form-group">
+                        <label for="cbodepartamento" class="form-label">
+                            <i class="fas fa-map-marker-alt me-1"></i>Departamento
+                        </label>
+                        <select class="form-select" id="cbodepartamento"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cbomunicipio" class="form-label">
+                            <i class="fas fa-city me-1"></i>Municipio
+                        </label>
+                        <select class="form-select" id="cbomunicipio"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cbolocalidad" class="form-label">
+                            <i class="fas fa-map-pin me-1"></i>Localidad
+                        </label>
+                        <select class="form-select" id="cbolocalidad"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtnombrecontacto" class="form-label">
+                            <i class="fas fa-user me-1"></i>Nombre de Contacto
+                        </label>
+                        <input type="text" class="form-control" id="txtnombrecontacto" placeholder="Tu nombre completo" autocomplete="off" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txtdireccion" class="form-label">
+                            <i class="fas fa-home me-1"></i>Dirección
+                        </label>
+                        <input type="text" class="form-control" id="txtdireccion" placeholder="Tu dirección completa" autocomplete="off" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="txttelefono" class="form-label">
+                            <i class="fas fa-phone me-1"></i>Teléfono
+                        </label>
+                        <input type="tel" class="form-control" id="txttelefono" placeholder="Tu número de teléfono" autocomplete="off" />
+                    </div>
+
+                    <button class="checkout-btn" type="button" onclick="EfectuarPago()">
+                        <i class="fab fa-paypal me-2"></i>Procesar Pago
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            cargarProductosCarrito();
+            ListApartment();
+        });
+
+        function cargarProductosCarrito() {
+            jQuery.ajax({
+                url: '@Url.Action("ListCartProducts", "Store")',
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    $('#productos-carrito').html("");
+                    $('#productos-carrito').LoadingOverlay("hide");
+
+                    if (response.data && response.data.length > 0) {
+                        $('#empty-cart-state').hide();
+
+                        $.each(response.data, function (i, item) {
+                            var precioFormateado = formatearPrecio(item.objProducto.Precio);
+                            crearTarjetaProducto(item, precioFormateado);
+                        });
+                    } else {
+                        $('#empty-cart-state').show();
+                    }
+
+                    SumTotal();
+                },
+                error: function (error) {
+                    $("#productos-carrito").LoadingOverlay("hide");
+                    console.error("Error al cargar productos:", error);
+                },
+                beforeSend: function () {
+                    $("#productos-carrito").LoadingOverlay("show");
+                }
+            });
+        }
+
+        function crearTarjetaProducto(item, precioFormateado) {
+            var productCard = $(`
+                <div class="cart-product-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 col-3 text-center">
+                            <img class="product-image" src="data:image/${item.objProducto.Extension};base64,${item.objProducto.Base64}" alt="${item.objProducto.Nombre}">
+                        </div>
+                        <div class="col-md-3 col-9">
+                        <div class="product-info">
+                            <div class="product-brand">${item.objProducto.objMarca.Descripcion}</div>
+                            <div class="product-name">${item.objProducto.Nombre}</div>
+                        </div>
+                        </div>
+
+                        <div class="col-md-2 col-6 text-center">
+                            <div class="product-price">$${precioFormateado} USD</div>
+                        </div>
+                        <div class="col-md-3 col-6 text-center">
+                            <div class="quantity-controls">
+                                <button class="quantity-btn btn-restar" type="button">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input class="quantity-input input-cantidad" type="number" value="${item.Cantidad}" disabled>
+                                <button class="quantity-btn btn-sumar" type="button">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-12 text-center mt-3 mt-md-0">
+                            <button class="delete-btn btn-eliminar" data-idproducto="${item.objProducto.IdProducto}">
+                                <i class="fas fa-trash-alt me-1"></i>Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            // Agregar datos del producto al input
+            productCard.find('.input-cantidad').data("objProducto", item.objProducto);
+
+            $('#productos-carrito').append(productCard);
+        }
+
+        function ListApartment() {
+            $("<option>").attr({ "value": "00", "disabled": "disabled", "selected": "true" }).text("Seleccionar departamento").appendTo("#cbodepartamento");
+
+            jQuery.ajax({
+                url: '@Url.Action("GetApartment", "Store")',
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.lista != null) {
+                        $.each(data.lista, function (i, item) {
+                            $("<option>").attr({ "value": item.IdDepartamento }).text(item.Descripcion).appendTo("#cbodepartamento");
+                        });
+                        GetMunicipality();
+                    }
+                }
+            });
+        }
+
+        $("#cbodepartamento").on("change", function () {
+            GetMunicipality();
+        });
+
+        function GetMunicipality() {
+            $("#cbomunicipio").html("");
+            $("<option>").attr({ "value": "00", "disabled": "disabled", "selected": "true" }).text("Seleccionar municipio").appendTo("#cbomunicipio");
+
+            jQuery.ajax({
+                url: '@Url.Action("GetMunicipality", "Store")',
+                type: "POST",
+                data: JSON.stringify({ IdDepartamento: $("#cbodepartamento option:selected").val() }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.lista != null) {
+                        $.each(data.lista, function (i, item) {
+                            $("<option>").attr({ "value": item.IdMunicipio }).text(item.Descripcion).appendTo("#cbomunicipio");
+                        });
+                        GetLocality();
+                    }
+                }
+            });
+        }
+
+        $("#cbomunicipio").on("change", function () {
+            GetLocality();
+        });
+
+        function GetLocality() {
+            $("#cbolocalidad").html("");
+            $("<option>").attr({ "value": "00", "disabled": "disabled", "selected": "true" }).text("Seleccionar localidad").appendTo("#cbolocalidad");
+
+            jQuery.ajax({
+                url: '@Url.Action("GetLocality", "Store")',
+                type: "POST",
+                data: JSON.stringify({
+                    IdDepartamento: $("#cbodepartamento option:selected").val(),
+                    IdMunicipio: $("#cbomunicipio option:selected").val()
+                }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.lista != null) {
+                        $.each(data.lista, function (i, item) {
+                            $("<option>").attr({ "value": item.IdLocalidad }).text(item.Descripcion).appendTo("#cbolocalidad");
+                        });
+                    }
+                }
+            });
+        }
+
+        function SumTotal() {
+            var sumtotal = parseFloat(0);
+            $("input.input-cantidad").each(function (i) {
+                var precio = $(this).data("objProducto").Precio;
+                var cantidad = parseFloat($(this).val());
+                var subtotal = precio * cantidad;
+                sumtotal += subtotal;
+            });
+
+            $("#total").text(formatearPrecio(sumtotal));
+            $("#total").data("sumtotal", sumtotal);
+        }
+
+        function formatearPrecio(precio) {
+            return precio.toLocaleString('es-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Eventos para los botones de cantidad
+        $(document).on("click", ".btn-sumar", function () {
+            var button = $(this);
+            var input_cantidad = button.siblings('.input-cantidad');
+            var idproduct = input_cantidad.data("objProducto").IdProducto;
+
+            jQuery.ajax({
+                url: '@Url.Action("OperacionDelCarrito", "Store")',
+                type: "POST",
+                data: JSON.stringify({ IdProducto: idproduct, sumar: true }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    button.LoadingOverlay("hide");
+                    if (data.respuesta) {
+                        var cantidad = parseInt(input_cantidad.val()) + 1;
+                        input_cantidad.val(cantidad);
+                        SumTotal();
+                        MostrarProductosEnCarrito();
+                    } else {
+                        swal("Error", data.mensaje, "warning");
+                    }
+                },
+                beforeSend: function () {
+                    button.LoadingOverlay("show");
+                },
+                error: function () {
+                    button.LoadingOverlay("hide");
+                }
+            });
+        });
+
+        $(document).on("click", ".btn-restar", function () {
+            var button = $(this);
+            var input_cantidad = button.siblings('.input-cantidad');
+            var idproduct = input_cantidad.data("objProducto").IdProducto;
+            var cantidad = parseInt(input_cantidad.val()) - 1;
+
+            if (cantidad >= 1) {
+                jQuery.ajax({
+                    url: '@Url.Action("OperacionDelCarrito", "Store")',
+                    type: "POST",
+                    data: JSON.stringify({ IdProducto: idproduct, sumar: false }),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        button.LoadingOverlay("hide");
+                        if (data.respuesta) {
+                            input_cantidad.val(cantidad);
+                            SumTotal();
+                            MostrarProductosEnCarrito();
+                        } else {
+                            swal("Error", data.mensaje, "warning");
+                        }
+                    },
+                    beforeSend: function () {
+                        button.LoadingOverlay("show");
+                    },
+                    error: function () {
+                        button.LoadingOverlay("hide");
+                    }
+                });
+            }
+        });
+
+        $(document).on("click", ".btn-eliminar", function () {
+            var button = $(this);
+            var idproduct = button.data("idproducto");
+            var card_product = button.closest('.cart-product-card');
+
+            swal({
+                title: "¿Estás seguro?",
+                text: "¿Quieres eliminar este producto del carrito?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
+                closeOnConfirm: false
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    jQuery.ajax({
+                        url: '@Url.Action("DeleteCart", "Store")',
+                        type: "POST",
+                        data: JSON.stringify({ IdProducto: idproduct }),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            if (data.respuesta) {
+                                card_product.fadeOut(300, function() {
+                                    $(this).remove();
+                                    SumTotal();
+                                    MostrarProductosEnCarrito();
+
+                                    // Verificar si el carrito está vacío
+                                    if ($('.cart-product-card').length === 0) {
+                                        $('#empty-cart-state').fadeIn();
+                                    }
+                                });
+                                swal("¡Eliminado!", "El producto ha sido eliminado del carrito.", "success");
+                            } else {
+                                swal("Error", data.mensaje, "error");
+                            }
+                        },
+                        error: function() {
+                            swal("Error", "No se pudo eliminar el producto. Intenta de nuevo.", "error");
+                        }
+                    });
+                }
+            });
+        });
+
+        function EfectuarPago() {
+            if (parseInt($("#cantidadencarrito").text()) == 0) {
+                swal("Carrito vacío", "No hay productos en el carrito para realizar la compra", "warning");
+                return;
+            }
+
+            if ($("#cbolocalidad").val() == "00" || $("#txtnombrecontacto").val() == "" ||
+                $("#txtdireccion").val() == "" || $("#txttelefono").val() == "") {
+                swal("Faltan datos", "Debes completar todos los campos del detalle de envío", "warning");
+                return;
+            }
+
+            var venta = {
+                TotalProducto: $("input.input-cantidad").length,
+                MontoTotal: 0,
+                Contacto: $("#txtnombrecontacto").val(),
+                IdLocalidad: $("#cbolocalidad").val(),
+                Telefono: $("#txttelefono").val(),
+                Direccion: $("#txtdireccion").val()
+            };
+
+            var list_cart = [];
+            $("input.input-cantidad").each(function (i) {
+                var producto = $(this).data("objProducto");
+                var cantidad = parseFloat($(this).val());
+                list_cart.push({
+                    objProducto: producto,
+                    Cantidad: cantidad
+                });
+            });
+
+            jQuery.ajax({
+                url: '@Url.Action("Checkout", "Store")',
+                type: "POST",
+                data: JSON.stringify({ objListCart: list_cart, objVenta: venta }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $.LoadingOverlay("hide");
+                    if (data.Status) {
+                        var jsonresult = data.Response;
+                        var links = jsonresult.links;
+                        var resultado = links.find(items => items.rel === "approve");
+                        window.location.href = resultado.href;
+                    } else {
+                        swal("Error", "Inténtalo de nuevo más tarde", "error");
+                    }
+                },
+                beforeSend: function () {
+                    $.LoadingOverlay("show");
+                },
+                error: function (error) {
+                    $.LoadingOverlay("hide");
+                    swal("Error", "Ocurrió un error al procesar el pago", "error");
+                }
+            });
+        }
+    </script>
+}

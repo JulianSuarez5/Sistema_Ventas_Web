@@ -1,0 +1,141 @@
+﻿@model CapaEntidad.clsProducto
+@{
+    ViewBag.Title = "ProductDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="data:image/@Html.DisplayTextFor(m => m.Extension);base64,@Html.DisplayTextFor(m => m.Base64)" alt="..." /></div>
+            <div class="col-md-6">
+                <div class="small mb-1">Marca: @Html.DisplayTextFor(m => m.objMarca.Descripcion)</div>
+                <h1 class="display-5 fw-bolder">@Html.DisplayTextFor(m => m.Nombre)</h1>
+                <div class="fs-5 mb-5">
+                    <span>$ @Model.Precio.ToString("N2", System.Globalization.CultureInfo.CreateSpecificCulture("es-US")) USD</span>
+                </div>
+
+                <!-- Descripción colapsable -->
+                <div class="description-container mb-4">
+                    <div class="description-preview collapsed">
+                        <p class="lead description-text mb-0">@Html.DisplayTextFor(m => m.Descripcion)</p>
+                    </div>
+                    <button class="btn btn-link p-0 text-decoration-none toggle-description mt-2" type="button">
+                        <span class="show-more">Ver más</span>
+                        <span class="show-less d-none">Ver menos</span>
+                    </button>
+                </div>
+
+                <div class="d-flex">
+                    <a href="@Url.Action("Index","Store")" class="btn btn-danger w-50 text-center me-3">
+                        <i class="fas fa-undo-alt"></i> Regresar
+                    </a>
+                    @if (Session["Cliente"] != null)
+                    {
+                        <button class="btn btn-success agregaracarrito flex-shrink-0 w-50" type="button" data-idproducto="@Html.DisplayTextFor(m => m.IdProducto)">
+                            <i class="fas fa-cart-plus"></i>
+                            Agregar al carrito
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Estilos para la descripción colapsable */
+    .description-preview {
+        position: relative;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+    }
+
+        .description-preview.collapsed {
+            max-height: 120px;
+        }
+
+            .description-preview.collapsed::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 40px;
+                background: linear-gradient(transparent, white);
+                pointer-events: none;
+            }
+
+    .toggle-description {
+        font-size: 14px;
+        color: #007bff;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+        .toggle-description:hover {
+            color: #0056b3;
+            text-decoration: underline !important;
+        }
+
+        .toggle-description:focus {
+            box-shadow: none;
+            outline: none;
+        }
+</style>
+
+@section scripts{
+    <script>
+        $(document).on("click", "button.agregaracarrito", function () {
+            var idProducto = $(this).data("idproducto");
+            console.log(idProducto);
+            jQuery.ajax({
+                url: "@Url.Action("AddToCart", "Store")",
+                type: "POST",
+                data: JSON.stringify({ IdProducto: idProducto }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.respuesta) {
+                        MostrarProductosEnCarrito();
+                        swal({
+                            title: "Agregado al carrito",
+                            text: "¿Deseas ir al carrito?",
+                            type: "success",
+                            showCancelButton: true,
+                            confirmButtonClass: "btn-primary",
+                            confirmButtonText: "Si",
+                            cancelButtonText: "No",
+                            closeOnConfirm: true
+                        }, function () {
+                            window.location.href = '@Url.Action("Cart","Store")';
+                        });
+                    } else {
+                        swal("", data.mensaje, "warning");
+                    }
+                }
+            });
+        });
+
+        // Script para la descripción colapsable
+        $(document).ready(function() {
+            $('.toggle-description').on('click', function() {
+                var $preview = $(this).siblings('.description-preview');
+                var $showMore = $(this).find('.show-more');
+                var $showLess = $(this).find('.show-less');
+
+                if ($preview.hasClass('collapsed')) {
+                    $preview.removeClass('collapsed');
+                    $showMore.addClass('d-none');
+                    $showLess.removeClass('d-none');
+                } else {
+                    $preview.addClass('collapsed');
+                    $showMore.removeClass('d-none');
+                    $showLess.addClass('d-none');
+                }
+            });
+        });
+    </script>
+}

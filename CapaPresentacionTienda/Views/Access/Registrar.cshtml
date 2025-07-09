@@ -1,0 +1,555 @@
+﻿@model CapaEntidad.clsCliente
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Cuenta</title>
+    <style>
+        /* Estilos generales y reseteo */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Partículas de fondo */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+            .particle:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .particle:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                left: 20%;
+                animation-delay: 2s;
+            }
+
+            .particle:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                left: 30%;
+                animation-delay: 4s;
+            }
+
+            .particle:nth-child(4) {
+                width: 100px;
+                height: 100px;
+                left: 40%;
+                animation-delay: 6s;
+            }
+
+            .particle:nth-child(5) {
+                width: 90px;
+                height: 90px;
+                left: 50%;
+                animation-delay: 8s;
+            }
+
+            .particle:nth-child(6) {
+                width: 110px;
+                height: 110px;
+                left: 60%;
+                animation-delay: 10s;
+            }
+
+            .particle:nth-child(7) {
+                width: 70px;
+                height: 70px;
+                left: 70%;
+                animation-delay: 12s;
+            }
+
+            .particle:nth-child(8) {
+                width: 130px;
+                height: 130px;
+                left: 80%;
+                animation-delay: 14s;
+            }
+
+        @@keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Contenedor principal del formulario */
+        .register-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 700px; /* Ancho ajustado para más campos */
+            padding: 20px;
+        }
+
+        /* Tarjeta del formulario */
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideIn 0.6s ease-out;
+        }
+
+            .register-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 35px 60px rgba(0, 0, 0, 0.3);
+            }
+
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Encabezado del formulario */
+        .register-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .register-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+                animation: rotate 20s linear infinite;
+            }
+
+        @@keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .register-title {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .register-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Cuerpo del formulario */
+        .register-body {
+            padding: 40px 30px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px; /* Espacio entre columnas */
+            margin-bottom: 25px;
+        }
+
+        .form-col {
+            flex: 1;
+            min-width: 280px; /* Para que no se encojan demasiado */
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            outline: none;
+        }
+
+            .form-input:focus {
+                border-color: #667eea;
+                background: white;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                transform: translateY(-2px);
+            }
+
+        .form-label {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: white;
+            padding: 0 5px;
+        }
+
+        .form-input:focus + .form-label,
+        .form-input:not(:placeholder-shown) + .form-label {
+            top: 0;
+            left: 15px;
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        /* Botón de registro */
+        .register-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px; /* Espacio superior para el botón */
+        }
+
+            .register-button::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                transition: left 0.5s ease;
+            }
+
+            .register-button:hover::before {
+                left: 100%;
+            }
+
+            .register-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            }
+
+            .register-button:active {
+                transform: translateY(0);
+            }
+
+        /* Pie de página del formulario */
+        .register-footer {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .login-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+            .login-link:hover {
+                color: #764ba2;
+                text-decoration: underline;
+            }
+
+        /* Alerta de error */
+        .error-alert {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+            animation: shake 0.5s ease-in-out;
+            text-align: center;
+        }
+
+        @@keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* Efecto de brillo */
+        .glow-effect {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 4s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.3;
+            }
+        }
+
+        /* Media queries para responsividad */
+        @@media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0; /* Eliminar el espacio entre columnas en pantallas pequeñas */
+            }
+
+            .form-col {
+                min-width: unset; /* Restablecer min-width */
+                margin-bottom: 25px; /* Espacio entre los campos apilados */
+            }
+
+            .register-body {
+                padding: 30px 20px;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .register-container {
+                padding: 10px;
+            }
+
+            .register-title {
+                font-size: 2rem;
+            }
+
+            .register-body {
+                padding: 30px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles">
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    </div>
+
+    <div class="glow-effect"></div>
+
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <h1 class="register-title">Crear Cuenta</h1>
+                <p class="register-subtitle">Únete a nuestra comunidad</p>
+            </div>
+
+            <div class="register-body">
+                <form action="@Url.Action("Registrar","Access")" method="post">
+
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="error-alert" role="alert">
+                            @ViewBag.Error
+                        </div>
+                    }
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.Nombres, new { @class = "form-input", @id = "txtnombre", @placeholder = " ", @value = ViewData["Nombres"] })
+                                <label class="form-label" for="txtnombre">Nombres</label>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.Apellidos, new { @class = "form-input", @id = "txtapellidos", @placeholder = " ", @value = ViewData["Apellidos"] })
+                                <label class="form-label" for="txtapellidos">Apellidos</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Correo, new { @class = "form-input", @id = "txtcorreo", @placeholder = " ", @value = ViewData["Correo"] })
+                        <label class="form-label" for="txtcorreo">Correo Electrónico</label>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                @Html.PasswordFor(m => m.Clave, new { @class = "form-input", @id = "txtclave", @placeholder = " " })
+                                <label class="form-label" for="txtclave">Contraseña</label>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                @Html.PasswordFor(m => m.Confirm_Clave, new { @class = "form-input", @id = "txtconfirmclave", @placeholder = " " })
+                                <label class="form-label" for="txtconfirmclave">Confirmar Contraseña</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="register-button">
+                        Crear Cuenta
+                    </button>
+
+                </form>
+            </div>
+
+            <div class="register-footer">
+                <p>¿Ya tienes una cuenta? <a href="@Url.Action("Index","Access")" class="login-link">Iniciar Sesión</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para el efecto "ripple" en los botones
+        document.querySelector('.register-button').addEventListener('click', function (e) {
+            const button = this;
+            const ripple = document.createElement('span');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
+
+            ripple.style.cssText = `
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        background: rgba(255, 255, 255, 0.4);
+                        border-radius: 50%;
+                        transform: scale(0);
+                        animation: ripple 0.6s ease-out;
+                        pointer-events: none;
+                    `;
+
+            button.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+
+
+        const style = document.createElement('style');
+        style.textContent = `
+                    @@keyframes ripple {
+                        to {
+                            transform: scale(4);
+                            opacity: 0;
+                        }
+                    }
+                `;
+        document.head.appendChild(style);
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const titleElement = document.querySelector('.register-title');
+            const originalTitleText = titleElement.textContent;
+            titleElement.textContent = '';
+
+            let charIndex = 0;
+            function typeWriterEffect() {
+                if (charIndex < originalTitleText.length) {
+                    titleElement.textContent += originalTitleText.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriterEffect, 100);
+                }
+            }
+
+            // Iniciar el efecto de máquina de escribir después de un pequeño retraso
+            setTimeout(typeWriterEffect, 500);
+        });
+    </script>
+</body>
+</html>

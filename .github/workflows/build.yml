@@ -14,10 +14,19 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
+          distribution: 'zulu'
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
+      
+      # PASO AÑADIDO: Instalar y configurar MSBuild
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      # PASO AÑADIDO: Instalar y configurar NuGet
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2.0.0
+      
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
@@ -37,12 +46,22 @@ jobs:
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+      
+      # PASO MODIFICADO: Build and analyze
       - name: Build and analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"JulianSuarez5_Sistema_Ventas_CRUD" /o:"juliansuarez5" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build
+          # Inicia el escáner de Sonar
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"JulianSuarez5_Sistema_Ventas_Web" /o:"juliansuarez5" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+          
+          # Restaura los paquetes NuGet de tu solución
+          nuget restore Sistema_Ventas_Web.sln
+          
+          # Compila la solución con MSBuild
+          msbuild /t:Rebuild Sistema_Ventas_Web.sln
+          
+          # Finaliza y envía el análisis a SonarCloud
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"

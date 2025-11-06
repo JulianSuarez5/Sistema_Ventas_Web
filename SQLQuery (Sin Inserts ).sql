@@ -742,3 +742,5 @@ RETURN (
         v.IdCliente = @IdCliente
 );
 GO
+
+SELECT * FROM CLIENTE

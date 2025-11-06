@@ -1,5 +1,7 @@
 ﻿using CapaEntidad;
 using CapaNegocio;
+using CapaPresentacionTienda.Helpers;
+using System.Configuration;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -11,16 +13,22 @@ namespace CapaPresentacionTienda.Controllers
         // GET: Access
         public ActionResult Index()
         {
+            ViewBag.SiteKey = ConfigurationManager.AppSettings["ReCaptcha:SiteKey"];
             return View();
         }
+
         public ActionResult Registrar()
         {
+            ViewBag.SiteKey = ConfigurationManager.AppSettings["ReCaptcha:SiteKey"];
             return View();
         }
+
         public ActionResult Restablecer_Contra()
         {
+            ViewBag.SiteKey = ConfigurationManager.AppSettings["ReCaptcha:SiteKey"];
             return View();
         }
+
         public ActionResult Cambiar_Contra()
         {
             return View();
@@ -29,6 +37,8 @@ namespace CapaPresentacionTienda.Controllers
         [HttpPost]
         public ActionResult Registrar(clsCliente obj)
         {
+            ViewBag.SiteKey = ConfigurationManager.AppSettings["ReCaptcha:SiteKey"];
+
             int Resultado;
             string Mensaje = string.Empty;
 
@@ -36,11 +46,20 @@ namespace CapaPresentacionTienda.Controllers
             ViewData["Apellidos"] = string.IsNullOrEmpty(obj.Apellidos) ? "" : obj.Apellidos;
             ViewData["Correo"] = string.IsNullOrEmpty(obj.Correo) ? "" : obj.Correo;
 
+            // Validar reCAPTCHA
+            string captchaResponse = Request.Form["g-recaptcha-response"];
+            if (!ReCaptchaHelper.ValidateReCaptcha(captchaResponse))
+            {
+                ViewBag.Error = "Por favor, completa la verificación de CAPTCHA.";
+                return View();
+            }
+
             if (obj.Clave != obj.Confirm_Clave)
             {
                 ViewBag.Error = "Las contraseñas no coinciden.";
                 return View();
             }
+
             Resultado = new clsN_Clientes().Registrar(obj, out Mensaje);
 
             if (Resultado > 0)
@@ -58,6 +77,16 @@ namespace CapaPresentacionTienda.Controllers
         [HttpPost]
         public ActionResult Index(string Correo, string Clave)
         {
+            ViewBag.SiteKey = ConfigurationManager.AppSettings["ReCaptcha:SiteKey"];
+
+            // Validar reCAPTCHA primero
+            string captchaResponse = Request.Form["g-recaptcha-response"];
+            if (!ReCaptchaHelper.ValidateReCaptcha(captchaResponse))
+            {
+                ViewBag.Error = "Por favor, completa la verificación de CAPTCHA.";
+                return View();
+            }
+
             clsCliente objCliente = null;
 
             objCliente = new clsN_Clientes().Listar().Where(item => item.Correo == Correo && item.Clave == clsN_Recursos.ConvertirSHA256(Clave)).FirstOrDefault();
@@ -77,9 +106,7 @@ namespace CapaPresentacionTienda.Controllers
                 else
                 {
                     FormsAuthentication.SetAuthCookie(objCliente.Correo, false);
-
                     Session["Cliente"] = objCliente;
-
                     ViewBag.Error = null;
                     return RedirectToAction("Index", "Store");
                 }
@@ -89,8 +116,17 @@ namespace CapaPresentacionTienda.Controllers
         [HttpPost]
         public ActionResult Restablecer_Contra(string Correo)
         {
-            clsCliente objclient = new clsCliente();
+            ViewBag.SiteKey = ConfigurationManager.AppSettings["ReCaptcha:SiteKey"];
 
+            // Validar reCAPTCHA
+            string captchaResponse = Request.Form["g-recaptcha-response"];
+            if (!ReCaptchaHelper.ValidateReCaptcha(captchaResponse))
+            {
+                ViewBag.Error = "Por favor, completa la verificación de CAPTCHA.";
+                return View();
+            }
+
+            clsCliente objclient = new clsCliente();
             objclient = new clsN_Clientes().Listar().Where(item => item.Correo == Correo).FirstOrDefault();
 
             if (objclient == null)
@@ -118,16 +154,12 @@ namespace CapaPresentacionTienda.Controllers
         public ActionResult Cambiar_Contra(string IdCliente, string contra_actual, string nueva_contra, string confirm_clave)
         {
             clsCliente objclient = new clsCliente();
-
             objclient = new clsN_Clientes().Listar().Where(u => u.IdCliente == int.Parse(IdCliente)).FirstOrDefault();
-
-
 
             if (objclient.Clave != clsN_Recursos.ConvertirSHA256(contra_actual))
             {
                 TempData["IdCliente"] = IdCliente;
                 ViewData["vContra"] = "";
-
                 ViewBag.Error = "La contraseña actual es incorrecta";
                 return View();
             }
@@ -135,17 +167,13 @@ namespace CapaPresentacionTienda.Controllers
             {
                 TempData["IdCliente"] = IdCliente;
                 ViewData["vContra"] = contra_actual;
-
                 ViewBag.Error = "Las contraseñas no coinciden";
                 return View();
             }
 
             ViewData["vContra"] = "";
-
             nueva_contra = clsN_Recursos.ConvertirSHA256(nueva_contra);
-
             string Mensaje = string.Empty;
-
             bool respuesta = new clsN_Clientes().Cambiar_Contra(int.Parse(IdCliente), nueva_contra, out Mensaje);
 
             if (respuesta)
@@ -163,9 +191,7 @@ namespace CapaPresentacionTienda.Controllers
         public ActionResult Salir()
         {
             FormsAuthentication.SignOut();
-
             Session["Cliente"] = null;
-
             Session.Clear();
             Session.Abandon();
             return RedirectToAction("Index", "Access");

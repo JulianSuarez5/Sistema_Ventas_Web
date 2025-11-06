@@ -29,7 +29,7 @@ GO
 CREATE TABLE PRODUCTO (
     IdProducto     INT PRIMARY KEY IDENTITY,
     Nombre         VARCHAR(500),
-    Descripcion    VARCHAR(500),
+    Descripcion    VARCHAR(MAX),
     IdMarca        INT REFERENCES MARCA(IdMarca),
     IdCategoria    INT REFERENCES CATEGORIA(IdCategoria),
     Precio         DECIMAL(10, 2) DEFAULT 0,
@@ -366,7 +366,7 @@ GO
 -- PROCEDIMIENTO ALMACENADO PARA REGISTRAR PRODUCTOS
 CREATE PROCEDURE USP_RegistrarProducto (
     @Nombre      VARCHAR(500),
-    @Descripcion VARCHAR(500),
+    @Descripcion VARCHAR(MAX),
     @IdMarca     VARCHAR(100),
     @IdCategoria VARCHAR(100),
     @Precio      DECIMAL(10, 2),
@@ -740,6 +740,59 @@ RETURN (
         INNER JOIN VENTA v ON v.IdVenta = dv.IdVenta
     WHERE
         v.IdCliente = @IdCliente
+);
+GO
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+CREATE PROCEDURE USP_ListarVentasAdmin
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        v.IdVenta,
+        v.FechaVenta,
+        CONCAT(c.Nombres, ' ', c.Apellidos) AS Cliente,
+        v.Contacto,
+        v.Telefono,
+        v.Direccion,
+        ISNULL(d.Descripcion, '') AS Departamento,
+        ISNULL(m.Descripcion, '') AS Municipio,
+        ISNULL(l.Descripcion, '') AS Localidad,
+        v.MontoTotal,
+        v.IdTransaccion
+    FROM
+        VENTA v
+    INNER JOIN
+        CLIENTE c ON v.IdCliente = c.IdCliente
+    LEFT JOIN
+        LOCALIDAD l ON v.IdLocalidad = l.IdLocalidad
+    LEFT JOIN
+        MUNICIPIO m ON l.IdMunicipio = m.IdMunicipio
+    LEFT JOIN
+        DEPARTAMENTO d ON m.IdDepartamento = d.IdDepartamento
+    ORDER BY
+        v.FechaVenta DESC;
+END
+GO
+
+
+CREATE FUNCTION FN_DetalleVentaAdmin (
+    @IdVenta INT
+)
+RETURNS TABLE
+AS
+RETURN (
+    SELECT
+        p.Nombre,
+        p.Precio,
+        dv.Cantidad,
+        dv.Total
+    FROM
+        DETALLE_VENTA dv
+    INNER JOIN PRODUCTO p ON p.IdProducto = dv.IdProducto
+    WHERE
+        dv.IdVenta = @IdVenta
 );
 GO
 

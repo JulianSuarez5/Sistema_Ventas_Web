@@ -380,7 +380,9 @@
                         var card = $("<div>").addClass("card h-100 product-card");
 
                         // Imagen
-                        var img = $("<img>").addClass("card-img-top").attr("src", "data:image/" + element.Extension + ";base64," + element.Base64);
+                        //var img = $("<img>").addClass("card-img-top").attr("src", "data:image/" + element.Extension + ";base64," + element.Base64);
+                        //Nueva url para establecer conexion con el contenedor de Azure
+                        var img = $("<img>").addClass("card-img-top").attr("src", element.RutaImagen);
 
                         // Cuerpo de la tarjeta
                         var cardBody = $("<div>").addClass("card-body p-4");

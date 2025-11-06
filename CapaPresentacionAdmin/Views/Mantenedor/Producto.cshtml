@@ -326,8 +326,9 @@
                         $("#img_Producto").LoadingOverlay("hide");
 
                         if (data.conversion) {
-
-                            $("#img_Producto").attr("src", "data:image/" + data.extension + ";base64," + data.textoBase64);
+                            //Nueva url para establecer conexion con el contenedor de Azure
+                            $("#img_Producto").attr("src", json.RutaImagen);
+                            //$("#img_Producto").attr("src", "data:image/" + data.extension + ";base64," + data.textoBase64);
                         }
                     },
                     error: function (error) {

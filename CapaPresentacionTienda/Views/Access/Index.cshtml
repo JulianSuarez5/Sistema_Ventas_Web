@@ -8,6 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         * {
             margin: 0;
@@ -23,7 +24,8 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            padding: 20px 0;
         }
 
         .particles {
@@ -123,6 +125,11 @@
             width: 100%;
             max-width: 400px;
             padding: 20px;
+            margin: auto;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .login-card {
@@ -134,6 +141,9 @@
             overflow: hidden;
             transition: all 0.3s ease;
             animation: slideIn 0.6s ease-out;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
             .login-card:hover {
@@ -249,6 +259,19 @@
             font-weight: 500;
         }
 
+        .captcha-container {
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 78px;
+        }
+
+        .g-recaptcha {
+            transform: scale(0.95);
+            transform-origin: center;
+        }
+
         .login-button {
             width: 100%;
             padding: 15px;
@@ -288,6 +311,13 @@
 
             .login-button:active {
                 transform: translateY(0);
+            }
+
+            .login-button:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
             }
 
         .login-links {
@@ -371,6 +401,38 @@
         @@media (max-width: 480px) {
             .login-container {
                 padding: 10px;
+                min-height: 100vh;
+            }
+
+            .login-title {
+                font-size: 2rem;
+            }
+
+            .login-body {
+                padding: 30px 20px;
+            }
+
+            .g-recaptcha {
+                transform: scale(0.8);
+            }
+
+            body {
+                padding: 10px 0;
+            }
+        }
+
+        @@media (max-height: 700px) {
+            .login-container {
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+
+            .login-card {
+                max-height: none;
+            }
+
+            .login-header {
+                padding: 20px 0;
             }
 
             .login-title {
@@ -424,7 +486,7 @@
             </div>
 
             <div class="login-body">
-                <form action="@Url.Action("Index", "Access")" method="post">
+                <form action="@Url.Action("Index", "Access")" method="post" id="loginForm">
 
                     @{
                         if (ViewBag.Error != null)
@@ -455,7 +517,11 @@
                         <label class="form-label">Contraseña</label>
                     </div>
 
-                    <button type="submit" class="login-button">
+                    <div class="captcha-container">
+                        <div class="g-recaptcha" data-sitekey="@ViewBag.SiteKey" data-callback="enableSubmit"></div>
+                    </div>
+
+                    <button type="submit" class="login-button" id="submitBtn" disabled>
                         Ingresar
                     </button>
 
@@ -472,6 +538,16 @@
     </div>
 
     <script>
+        // Habilitar el botón de envío cuando se complete el reCAPTCHA
+        function enableSubmit() {
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        // Deshabilitar el botón si expira el reCAPTCHA
+        function expiredCallback() {
+            document.getElementById('submitBtn').disabled = true;
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const title = document.querySelector('.login-title');
             const originalText = title.textContent;
@@ -487,9 +563,22 @@
             };
 
             setTimeout(typeWriter, 500);
+
+            // Validación del formulario
+            const form = document.getElementById('loginForm');
+            form.addEventListener('submit', function (e) {
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (!recaptchaResponse) {
+                    e.preventDefault();
+                    alert('Por favor, completa la verificación de CAPTCHA.');
+                    return false;
+                }
+            });
         });
 
         document.querySelector('.login-button').addEventListener('click', function (e) {
+            if (this.disabled) return;
+
             const button = this;
             const ripple = document.createElement('span');
             const rect = button.getBoundingClientRect();
@@ -498,17 +587,17 @@
             const y = e.clientY - rect.top - size / 2;
 
             ripple.style.cssText = `
-                            position: absolute;
-                            width: ${size}px;
-                            height: ${size}px;
-                            left: ${x}px;
-                            top: ${y}px;
-                            background: rgba(255, 255, 255, 0.4);
-                            border-radius: 50%;
-                            transform: scale(0);
-                            animation: ripple 0.6s ease-out;
-                            pointer-events: none;
-                        `;
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.4);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                `;
 
             button.appendChild(ripple);
 
@@ -519,13 +608,13 @@
 
         const style = document.createElement('style');
         style.textContent = `
-                        @@keyframes ripple {
-                            to {
-                                transform: scale(4);
-                                opacity: 0;
-                            }
-                        }
-                    `;
+                @@keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+            `;
         document.head.appendChild(style);
     </script>
 </body>

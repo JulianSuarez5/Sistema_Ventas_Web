@@ -7,7 +7,7 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="row gx-4 gx-lg-5 align-items-center">
-            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="data:image/@Html.DisplayTextFor(m => m.Extension);base64,@Html.DisplayTextFor(m => m.Base64)" alt="..." /></div>
+            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="@Url.Content(Model.RutaImagen)" alt="..." /></div>
             <div class="col-md-6">
                 <div class="small mb-1">Marca: @Html.DisplayTextFor(m => m.objMarca.Descripcion)</div>
                 <h1 class="display-5 fw-bolder">@Html.DisplayTextFor(m => m.Nombre)</h1>
@@ -17,12 +17,19 @@
 
                 <!-- Descripción colapsable -->
                 <div class="description-container mb-4">
+                    <h5 class="mb-3">Descripción del Producto</h5>
                     <div class="description-preview collapsed">
-                        <p class="lead description-text mb-0">@Html.DisplayTextFor(m => m.Descripcion)</p>
+                        <div class="description-text">
+                            @Html.Raw(Model.Descripcion.Replace("\n", "<br>"))
+                        </div>
                     </div>
-                    <button class="btn btn-link p-0 text-decoration-none toggle-description mt-2" type="button">
-                        <span class="show-more">Ver más</span>
-                        <span class="show-less d-none">Ver menos</span>
+                    <button class="btn btn-outline-primary btn-sm toggle-description mt-2" type="button">
+                        <span class="show-more">
+                            <i class="fas fa-chevron-down me-1"></i>Ver descripción completa
+                        </span>
+                        <span class="show-less d-none">
+                            <i class="fas fa-chevron-up me-1"></i>Ver menos
+                        </span>
                     </button>
                 </div>
 
@@ -44,11 +51,27 @@
 </section>
 
 <style>
-    /* Estilos para la descripción colapsable */
+    /* Estilos mejorados para la descripción */
+    .description-container {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+        .description-container h5 {
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 8px;
+        }
+
     .description-preview {
         position: relative;
         overflow: hidden;
-        transition: max-height 0.4s ease;
+        transition: max-height 0.5s ease-in-out;
+        line-height: 1.6;
     }
 
         .description-preview.collapsed {
@@ -61,29 +84,49 @@
                 bottom: 0;
                 left: 0;
                 right: 0;
-                height: 40px;
-                background: linear-gradient(transparent, white);
+                height: 50px;
+                background: linear-gradient(transparent, #f8f9fa);
                 pointer-events: none;
             }
 
+    .description-text {
+        color: #6c757d;
+        font-size: 15px;
+        text-align: justify;
+    }
+
+        .description-text p {
+            margin-bottom: 12px;
+        }
+
     .toggle-description {
         font-size: 14px;
-        color: #007bff;
-        border: none;
-        background: none;
-        cursor: pointer;
         font-weight: 500;
+        border: 1px solid #007bff !important;
+        transition: all 0.3s ease;
     }
 
         .toggle-description:hover {
-            color: #0056b3;
-            text-decoration: underline !important;
+            background-color: #007bff;
+            color: white !important;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,123,255,0.2);
         }
 
         .toggle-description:focus {
-            box-shadow: none;
-            outline: none;
+            box-shadow: 0 0 0 0.25rem rgba(0,123,255,0.25);
         }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .description-container {
+            padding: 15px;
+        }
+
+        .description-preview.collapsed {
+            max-height: 100px;
+        }
+    }
 </style>
 
 @section scripts{

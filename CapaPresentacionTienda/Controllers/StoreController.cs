@@ -64,7 +64,7 @@ namespace CapaPresentacionTienda.Controllers
         {
             List<clsProducto> productos = new List<clsProducto>();
 
-            bool convert;
+            // bool convert; // Esta variable ya no será necesaria para este método
 
             productos = new clsN_Producto().Listar().Select(p => new clsProducto()
             {
@@ -75,18 +75,18 @@ namespace CapaPresentacionTienda.Controllers
                 objCategoria = p.objCategoria,
                 Precio = p.Precio,
                 Stock = p.Stock,
-                RutaImagen = p.RutaImagen,
-                Base64 = clsN_Recursos.convertirBase64(Path.Combine(p.RutaImagen, p.NombreImagen), out convert),
-                Extension = Path.GetExtension(p.NombreImagen),
+                RutaImagen = p.RutaImagen, // <-- Se mantiene solo la URL completa de la imagen aquí
+                // Base64 = clsN_Recursos.convertirBase64(Path.Combine(p.RutaImagen, p.NombreImagen), out convert),
+                // Extension = Path.GetExtension(p.NombreImagen),
                 Activo = p.Activo,
             }).Where(p => p.objCategoria.IdCategoria == (IdCategoria == 0 ? p.objCategoria.IdCategoria : IdCategoria) &&
-                     p.objMarca.IdMarca == (IdMarca == 0 ? p.objMarca.IdMarca : IdMarca) &&
-                     p.Stock > 0 && p.Activo == true
-                     ).ToList();
+                         p.objMarca.IdMarca == (IdMarca == 0 ? p.objMarca.IdMarca : IdMarca) &&
+                         p.Stock > 0 && p.Activo == true
+                         ).ToList();
 
             var jsonresult = Json(new { data = productos }, JsonRequestBehavior.AllowGet);
 
-            jsonresult.MaxJsonLength = int.MaxValue; // Allow large JSON responses
+            jsonresult.MaxJsonLength = int.MaxValue; // Permitir respuestas JSON grandes
 
             return jsonresult;
         }
@@ -287,6 +287,13 @@ namespace CapaPresentacionTienda.Controllers
                 items = objListaItem
             };
 
+            // Construcción de las URLs de forma dinámica
+            string scheme = Request.Url.Scheme; // http o https
+            string authority = Request.Url.Authority; // localhost:44396 o www.mitienda.com
+
+            string returnUrl = $"{scheme}://{authority}{Url.Action("PagoRealizado", "Store")}";
+            string cancelUrl = $"{scheme}://{authority}{Url.Action("Cart", "Store")}";
+
             cls_Checkout_Order objCheckoutOrder = new cls_Checkout_Order()
             {
                 intent = "CAPTURE",
@@ -296,8 +303,8 @@ namespace CapaPresentacionTienda.Controllers
                     brand_name = "AutomateHub.com",
                     landing_page = "NO_PREFERENCE",
                     user_action = "PAY_NOW",
-                    return_url = "https://localhost:44396/Store/PagoRealizado",
-                    cancel_url = "https://localhost:44396/Store/Cart"
+                    return_url = returnUrl,
+                    cancel_url = cancelUrl
                 }
             };
 

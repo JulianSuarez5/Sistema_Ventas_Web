@@ -24,7 +24,16 @@ namespace CapaDatos
                     cmd.Parameters.AddWithValue("TotalProducto", obj.TotalProducto);
                     cmd.Parameters.AddWithValue("MontoTotal", obj.MontoTotal);
                     cmd.Parameters.AddWithValue("Contacto", obj.Contacto);
-                    cmd.Parameters.AddWithValue("IdLocalidad", obj.IdLocalidad);
+                    // Si la localidad es nula, vacía o "00", se envía un valor NULO a la base de datos.
+                    if (string.IsNullOrEmpty(obj.IdLocalidad) || obj.IdLocalidad == "00")
+                    {
+                        cmd.Parameters.AddWithValue("IdLocalidad", DBNull.Value);
+                    }
+                    else
+                    {
+                        // De lo contrario, se envía el valor que viene del formulario.
+                        cmd.Parameters.AddWithValue("IdLocalidad", obj.IdLocalidad);
+                    }
                     cmd.Parameters.AddWithValue("Telefono", obj.Telefono);
                     cmd.Parameters.AddWithValue("Direccion", obj.Direccion);
                     cmd.Parameters.AddWithValue("IdTransaccion", obj.IdTransaccion);
